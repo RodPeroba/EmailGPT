@@ -1,0 +1,9 @@
+Mudar a seleção de envio para um botão só
+Validação de tamanho maximo de arquivo enviado???
+Fazer upload de arquivo tambem poder ser feito via drag and drop
+barra de progresso
+resposta visual???
+
+
+
+seguir o projeto

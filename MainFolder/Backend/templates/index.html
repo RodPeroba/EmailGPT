@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload e Texto</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f7f7; height:100vh; display:grid; place-items:center; }
+    .card { background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,.08); width:350px; }
+    .row { margin:10px 0; display:flex; flex-direction:column; }
+    textarea { width:100%; height:80px; }
+    .ok { color:#0a7b28; } .err { color:#b00020; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Upload ou Texto</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <div class="row">
+        <label for="fileInput">Arquivo:</label>
+        <input type="file" name="file" id="fileInput" accept=".jpg,.png,.pdf,.csv" />
+      </div>
+      <div class="row">
+        <label for="textInput">Texto:</label>
+        <textarea name="text" id="textInput" placeholder="Digite aqui..."></textarea>
+      </div>
+      <div class="row">
+        <button type="submit" id="submitFile">Enviar Arquivo</button>
+        <button type="submit" id="submitText">Enviar Texto</button>
+      </div>
+      <p id="status"></p>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const statusText = document.getElementById('status');
+    const submitFile = document.getElementById('submitFile');
+    const submitText = document.getElementById('submitText');
+
+    submitFile.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const file = document.getElementById('fileInput').files[0];
+      
+      if (!file) {
+        statusText.textContent = 'Selecione um arquivo!';
+        statusText.className = 'err';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      await sendData(formData);
+    });
+
+    submitText.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('textInput').value.trim();
+      
+      if (!text) {
+        statusText.textContent = 'Digite algum texto!';
+        statusText.className = 'err';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('text', text);
+      await sendData(formData);
+    });
+
+    async function sendData(formData) {
+      statusText.textContent = 'Enviando...';
+      statusText.className = '';
+
+      try {
+        const resp = await fetch('/upload', { method: 'POST', body: formData });
+        const result = await resp.json();
+        statusText.textContent = result.message;
+        statusText.className = resp.ok ? 'ok' : 'err';
+      } catch {
+        statusText.textContent = 'Erro no envio!';
+        statusText.className = 'err';
+      }
+    }
+  </script>
+</body>
+</html>
