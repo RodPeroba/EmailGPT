@@ -8,4 +8,5 @@ openai-1.102.0
 pydantic-2.11.7
 pydantic-core-2.33.2
 tqdm-4.67.1
-typing-inspection-0.4.1 
+typing-inspection-0.4.1
+PyPDF2-3.0.1 

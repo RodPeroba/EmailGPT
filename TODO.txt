@@ -1,15 +1,13 @@
-Trocar a API do processamento de texto por uma gratuita ---- Usar OpenRouter
-
-Pré-processar o texto ----- API n aceita receber PDF
+CLASSIFICAR O EMAIL COMO PRODUTIVO OU IMPRODUTIVO
 
 
 
 
 
-Validação de tamanho maximo de arquivo enviado???
+Validação de tamanho maximo de arquivo enviado
 Fazer upload de arquivo tambem poder ser feito via drag and drop
 barra de progresso
-resposta visual???
 Pensar em como fazer a chave algo secreto e pessoal de quem esta usando
-
+Fazer uma interface bonitinha
+Fazer streaming da resposta
 

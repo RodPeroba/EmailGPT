@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload e Texto</title>
+    <title>Analisador de email</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -41,6 +41,88 @@
         margin-bottom: 15px;
         padding: 5px;
       }
+      pre {
+        background: #eee;
+        padding: 10px;
+        white-space: pre-wrap;
+      }
+      .response-area {
+        width: 100%;
+        height: 200px; /* Altura fixa para simetria */
+        margin: 15px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-family: monospace;
+        resize: none; /* Remove redimensionamento para manter simetria */
+        box-sizing: border-box;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .modal-buttons button {
+        padding: 5px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .confirm-btn {
+        background: #28a745;
+        color: white;
+      }
+
+      .cancel-btn {
+        background: #dc3545;
+        color: white;
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .controls button {
+        padding: 5px 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .controls button:hover {
+        background: #0056b3;
+      }
     </style>
   </head>
   <body>
@@ -57,12 +139,7 @@
 
         <div class="row" id="fileDiv">
           <label for="fileInput">Arquivo:</label>
-          <input
-            type="file"
-            name="file"
-            id="fileInput"
-            accept=".jpg,.png,.pdf,.csv"
-          />
+          <input type="file" name="file" id="fileInput" accept=".txt,.pdf" />
         </div>
 
         <div class="row hidden" id="textDiv">
@@ -75,20 +152,66 @@
         </div>
 
         <div class="row">
-          <button type="submit" id="submitBtn">Enviar</button>
+          <button type="submit">Enviar</button>
         </div>
-        <p id="status"></p>
+        <div class="row">
+          <p id="status"></p>
+          <textarea
+            id="responseText"
+            class="response-area"
+            placeholder="A resposta aparecerá aqui..."
+          ></textarea>
+          <div class="controls">
+            <button id="copyBtn" type="button">Copiar</button>
+            <button id="saveBtn" type="button">Baixar resposta</button>
+          </div>
+        </div>
       </form>
+    </div>
+
+    <div id="downloadModal" class="modal">
+      <div class="modal-content">
+        <p>Deseja baixar a resposta?</p>
+        <div class="modal-buttons">
+          <button class="confirm-btn" id="confirmDownload">Confirmar</button>
+          <button class="cancel-btn" id="cancelDownload">Cancelar</button>
+        </div>
+      </div>
     </div>
 
     <script>
       const form = document.getElementById("uploadForm");
       const statusText = document.getElementById("status");
+      const responseText = document.getElementById("responseText");
       const inputType = document.getElementById("inputType");
       const fileDiv = document.getElementById("fileDiv");
       const textDiv = document.getElementById("textDiv");
+      const fileInput = document.getElementById("fileInput");
+      const textInput = document.getElementById("textInput");
+      const copyBtn = document.getElementById("copyBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const downloadModal = document.getElementById("downloadModal");
+      const confirmDownload = document.getElementById("confirmDownload");
+      const cancelDownload = document.getElementById("cancelDownload");
 
-      // Alterna entre os campos de entrada
+      // Função para limpar todos os campos
+      function limparCampos() {
+        fileInput.value = "";
+        textInput.value = "";
+        statusText.textContent = "";
+        statusText.className = "";
+        responseText.value = "";
+        inputType.value = "file";
+        fileDiv.classList.remove("hidden");
+        textDiv.classList.add("hidden");
+      }
+
+      // Limpa os campos quando a página carrega
+      window.addEventListener("load", limparCampos);
+
+      // Limpa os campos quando o usuário atualiza a página
+      window.addEventListener("beforeunload", limparCampos);
+
       inputType.addEventListener("change", () => {
         if (inputType.value === "file") {
           fileDiv.classList.remove("hidden");
@@ -121,12 +244,8 @@
           formData.append("text", text);
         }
 
-        await sendData(formData);
-      });
-
-      async function sendData(formData) {
         statusText.textContent = "Enviando...";
-        statusText.className = "";
+        responseText.value = "";
 
         try {
           const resp = await fetch("/upload", {
@@ -134,13 +253,86 @@
             body: formData,
           });
           const result = await resp.json();
-          statusText.textContent = result.message;
+          statusText.textContent = result.status;
           statusText.className = resp.ok ? "ok" : "err";
+          if (result.response) {
+            responseText.value = result.response;
+          }
         } catch {
           statusText.textContent = "Erro no envio!";
           statusText.className = "err";
         }
+      });
+
+      // Função para copiar o texto para a área de transferência
+      copyBtn.addEventListener("click", () => {
+        responseText.select();
+        document.execCommand("copy");
+        statusText.textContent = "Texto copiado!";
+        statusText.className = "ok";
+        setTimeout(() => {
+          statusText.textContent = "";
+        }, 2000);
+      });
+
+      // Função para salvar o texto como arquivo
+      function downloadFile() {
+        const text = responseText.value;
+        if (!text.trim()) {
+          statusText.textContent = "Não há texto para baixar!";
+          statusText.className = "err";
+          setTimeout(() => {
+            statusText.textContent = "";
+          }, 2000);
+          return;
+        }
+
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resposta.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        statusText.textContent = "Arquivo salvo!";
+        statusText.className = "ok";
+        setTimeout(() => {
+          statusText.textContent = "";
+        }, 2000);
       }
+
+      // Modificar o evento do botão salvar
+      saveBtn.addEventListener("click", () => {
+        if (!responseText.value.trim()) {
+          statusText.textContent = "Não há texto para baixar!";
+          statusText.className = "err";
+          setTimeout(() => {
+            statusText.textContent = "";
+          }, 2000);
+          return;
+        }
+        downloadModal.style.display = "block";
+      });
+
+      // Eventos do modal
+      confirmDownload.addEventListener("click", () => {
+        downloadModal.style.display = "none";
+        downloadFile();
+      });
+
+      cancelDownload.addEventListener("click", () => {
+        downloadModal.style.display = "none";
+      });
+
+      // Fechar modal ao clicar fora
+      window.addEventListener("click", (e) => {
+        if (e.target === downloadModal) {
+          downloadModal.style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>
