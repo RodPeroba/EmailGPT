@@ -1,8 +1,5 @@
 CLASSIFICAR O EMAIL COMO PRODUTIVO OU IMPRODUTIVO
 
-CONTAINERIZAR O SITE
-
-
 
 Validação de tamanho maximo de arquivo enviado
 Fazer upload de arquivo tambem poder ser feito via drag and drop

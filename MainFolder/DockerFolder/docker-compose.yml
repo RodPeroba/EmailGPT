@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   web:
+    image: rodperoba/emailgpt:v0.1
     build:
       context: ..
       dockerfile: DockerFolder/Dockerfile
@@ -12,6 +13,7 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_DEBUG=1
+      - API_KEY=${API_KEY}
     env_file:
       - .env
     restart: unless-stopped
