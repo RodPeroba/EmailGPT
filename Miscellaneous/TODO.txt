@@ -10,4 +10,4 @@ barra de progresso
 Pensar em como fazer a chave algo secreto e pessoal de quem esta usando
 Fazer uma interface bonitinha
 Fazer streaming da resposta
-
+Fazer a consulta a LLM ser asincrona, descobrir se há beneficios 
