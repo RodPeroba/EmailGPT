@@ -3,7 +3,7 @@ from openai import OpenAIError
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="COLOCA_CHAVE_AQUI",  # TODO Colocar chave via variável de ambiente
 )
 
 def call_openai_api(message):
