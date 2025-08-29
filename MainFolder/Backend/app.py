@@ -10,7 +10,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 
-API_KEY = "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" # Substitua pela sua chave real ;)
+API_KEY = os.getenv('API_KEY')
 MODEL_LLM = "deepseek/deepseek-chat-v3.1:free"
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
 app = Flask(__name__, template_folder='templates')
@@ -75,4 +75,4 @@ def upload_file():
     return jsonify({"status": "Processamento concluído", "response": resposta}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
