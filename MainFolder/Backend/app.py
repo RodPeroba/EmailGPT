@@ -2,14 +2,18 @@ import os
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
+from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
 
 # Configurações
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(BASE_DIR))
+ENV_PATH = os.path.join(PROJECT_ROOT, 'MainFolder', 'DockerFolder', '.env')
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 
+load_dotenv(ENV_PATH)  # Carrega variáveis do .env
 API_KEY = os.getenv('API_KEY')
 MODEL_LLM = "deepseek/deepseek-chat-v3.1:free"
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=API_KEY)
@@ -31,7 +35,7 @@ def call_openai_api(message: str) -> str:
         response = client.chat.completions.create(
             model=MODEL_LLM,
             messages=[
-                {"role": "system", "content": "Você é um assistente no setor financeiro da empresa, sua função é ler emails e responder da melhor forma, sendo profissional para emails profissionais e casual para emails casuais."},
+                {"role": "developer", "content": "Você é um assistente no setor financeiro da empresa, sua função é ler emails e responder da melhor forma, sendo profissional para emails profissionais e casual para emails casuais."},
                 {"role": "user", "content": message}
             ],
             seed=42

@@ -3,13 +3,15 @@ version: "3.8"
 services:
   web:
     build:
-      context: ../.. # Aponta para o diretório raiz do projeto
-      dockerfile: MainFolder/DockerFolder/Dockerfile
+      context: ..
+      dockerfile: DockerFolder/Dockerfile
     ports:
       - "5000:5000"
     volumes:
       - ../Backend/uploads:/app/uploads
     environment:
       - FLASK_APP=app.py
-      - FLASK_ENV=development
-      - API_KEY=sua_chave
+      - FLASK_DEBUG=1
+    env_file:
+      - .env
+    restart: unless-stopped
