@@ -1,10 +1,8 @@
-CLASSIFICAR O EMAIL COMO PRODUTIVO OU IMPRODUTIVO
 
-
+Tornar a consulta a api assincrona
 Validação de tamanho maximo de arquivo enviado
 Fazer upload de arquivo tambem poder ser feito via drag and drop
 barra de progresso
-Pensar em como fazer a chave algo secreto e pessoal de quem esta usando
 Fazer uma interface bonitinha
 Fazer streaming da resposta
 Fazer a consulta a LLM ser asincrona, descobrir se há beneficios 
